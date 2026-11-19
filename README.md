@@ -1,85 +1,108 @@
-Doclivo
+📄 Doclivo
 
-Free online file converter and PDF editor. Convert Word, PowerPoint, Excel, PDF and images in any direction, up to 15 files at once, then merge, split, sign, edit, watermark, compress or protect PDFs. No account, no tracking, and every file is deleted the moment the result is sent back.
+I got tired of converter sites that want a login, slap a watermark on your file, or cap you at 2 conversions a day. So I built my own.
 
-Live site: https://doclivo.onrender.com (first visit after a quiet period takes about a minute while the free server wakes up)
+Doclivo converts Word, PowerPoint, Excel, PDF and images into pretty much any format you need, and has a bunch of PDF tools on top. It's free, there's no sign-up, and your files get deleted as soon as you download the result.
 
-What it does
-Convert
+🔗 Try it: https://doclivo.onrender.com
+
+⏳ It runs on Render's free plan, so if nobody's used it for a while the first load takes about a minute to wake up. After that it's quick.
+
+🔄 What it converts
 From	To
-Word (.doc .docx .odt .rtf .txt .html)	PDF, Word, Word 97, ODT, RTF, Text, HTML, JPG, PNG
-PowerPoint (.ppt .pptx .odp)	PDF, Word (slide-look or clean document), PowerPoint, PPT 97, ODP, JPG, PNG
-Excel (.xls .xlsx .ods .csv)	PDF, Excel, XLS 97, ODS, CSV
-PDF	Word, ODT, PowerPoint, Excel, Text, JPG, PNG
-Images (.jpg .png .webp .gif .bmp .tiff .heic)	PDF (one or many images), JPG, PNG, WebP
+📝 Word (doc, docx, odt, rtf, txt, html)	PDF, Word, ODT, RTF, Text, HTML, JPG, PNG
+📊 PowerPoint (ppt, pptx, odp)	PDF, Word, PPT, ODP, JPG, PNG
+📈 Excel (xls, xlsx, ods, csv)	PDF, Excel, ODS, CSV
+📕 PDF	Word, PowerPoint, Excel, Text, JPG, PNG
+🖼️ Images (jpg, png, webp, heic...)	PDF, JPG, PNG, WebP
 
-Batches: drop up to 15 files of mixed types and choose one format. Everything that can become that format is converted and returned in a single zip; files already in that format are included unchanged; anything that can't be converted is listed in NOT-CONVERTED.txt inside the zip, and the page tells you which ones before you start.
+PowerPoint → Word has two modes: keep the slides looking like slides, or turn them into a clean document with headings, bullet points, tables and your speaker notes. The second one is great for making notes out of lecture slides 📚
 
-PDF tools
-Group	Tools
-Arrange pages	Merge, Split, Organize (reorder, rotate, duplicate, delete with live thumbnails), Rotate
-Mark up	Edit (text, pictures, highlight, white-out, boxes, freehand drawing), Sign (draw or upload), Add watermark, Remove watermark (PDF and Word), Page numbers
-Shrink and secure	Compress, Protect with password, Unlock, OCR for scanned PDFs (when installed)
+📦 Lots of files at once
 
-Previews for Organize, Rotate, Edit and Sign are drawn in your browser with pdf.js; the file is only uploaded when you press Save.
+Drop up to 15 files (mix of PPTs, Word docs, PDFs, whatever) and pick one format. You get everything back in a single zip. If a file can't be converted to that format, it tells you before you start, and lists it in a NOT-CONVERTED.txt inside the zip so nothing silently goes missing.
 
-How it works
-Browser (web/)  ──upload──►  FastAPI server (app/main.py)  ──►  worker process (app/jobs.py)
-pdf.js previews              size & type checks, rate limits,     LibreOffice, pdf2docx, pypdf,
-vanilla JavaScript           queue, automatic clean-up           pikepdf, pdfium, Pillow, Tesseract
+🛠️ PDF tools
 
-Every job runs in its own process with a hard time limit, so a damaged or hostile file can't take the site down. A fixed number of jobs run at once and the rest wait in a short queue. Temporary folders are deleted after each response and swept every 10 minutes.
+Pages
 
-Built with
+🔗 Merge PDFs
+✂️ Split by page range
+🗂️ Organize: drag pages around, rotate, duplicate, delete
+🔃 Rotate
 
-Python, FastAPI, Uvicorn, LibreOffice (headless), pdf2docx, pypdf, pikepdf, pypdfium2, pdfplumber, python-docx, python-pptx, openpyxl, Pillow, ReportLab, Tesseract OCR, pdf.js, plain HTML/CSS/JavaScript, Docker.
+Editing
 
-Repository layout
-doclivo/
-  app/            Python server: API, conversion engine, PDF tools, watermark removal
-  web/            website: pages, styles, editor, pdf.js
-  tests/          63 automated tests (pytest)
-  Dockerfile.render   image used by Render's free plan
-  Dockerfile      full image with OCR, for your own server
-  docker-compose.yml + Caddyfile   always-on deployment with automatic HTTPS
-  render.yaml     Render Blueprint
-  requirements.txt
-Run it locally
+✏️ Add text, images, highlights, boxes, freehand drawing
+🩹 White-out (cover something and type over it)
+✍️ Sign: draw it with your mouse/finger or upload a photo of your signature
+💧 Add a watermark
+🚫 Remove a watermark (works on PDFs and Word files)
+🔢 Page numbers
 
-Needs Python 3.10+ and LibreOffice (brew install --cask libreoffice on a Mac). Tesseract is optional, for OCR.
+Size & security
+
+🗜️ Compress (got a 21 MB PDF down to 646 KB in testing)
+🔒 Password protect
+🔓 Unlock
+🔍 OCR for scanned PDFs (on the local version)
+
+The editor and page organizer show your PDF right in the browser, so nothing gets uploaded until you hit Save.
+
+🧱 How it's built
+your browser  ──►  FastAPI server  ──►  separate worker process
+(HTML/CSS/JS,       (checks files,       (LibreOffice, pdf2docx,
+ pdf.js preview)     queue, cleanup)       pypdf, pikepdf...)
+
+Every conversion runs in its own process with a time limit. So if someone uploads a broken or weird file, only that job dies and the site keeps running.
+
+Stack: Python · FastAPI · LibreOffice (headless) · pdf2docx · pypdf · pikepdf · pypdfium2 · pdfplumber · python-docx · python-pptx · openpyxl · Pillow · ReportLab · pdf.js · plain JavaScript (no framework) · Docker · Render
+
+💻 Run it yourself
+
+You'll need Python 3.10+ and LibreOffice.
 
 bash
+# on a Mac
+brew install --cask libreoffice
+
 cd doclivo
 python3 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
 python -m uvicorn app.main:app --port 8000
 
-Open http://127.0.0.1:8000.
+Then open http://127.0.0.1:8000 🎉
 
-Run the tests with pip install -r requirements-dev.txt then python -m pytest -q. Sample files are generated on the first run.
+Want OCR too? brew install tesseract tesseract-lang and restart.
 
-Deploy
+Tests: there are 63 of them.
 
-Render (free): this repository is set up as a Render Blueprint. New → Blueprint → choose the repository → Blueprint path doclivo/render.yaml → Apply. Set the SOURCE_URL environment variable to this repository's address. The free plan gives 512 MB of memory and a small share of a CPU, so one job runs at a time, files are limited to 15 MB, and the site sleeps after 15 minutes without visitors.
+bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+🚀 Deploying
 
-Your own server: cd doclivo, copy .env.example to .env, set DOMAIN, then docker compose up -d --build. Caddy obtains the HTTPS certificate automatically.
+Render (free) — this repo is already set up as a Render Blueprint. New → Blueprint → pick this repo → set the Blueprint path to doclivo/render.yaml → Apply. First build takes 10-20 min because LibreOffice is big.
 
-All limits (file size, pages, workers, rate limits, timeouts) are environment variables; see doclivo/.env.example.
+Free plan means 512 MB of RAM, so it handles one job at a time and files up to 15 MB each. I tested a 10-file batch under a real 512 MB limit and it peaked at about 230 MB, so there's room.
 
-Security and privacy
-Upload size is enforced while receiving; oversized requests are cut off.
-File types are checked by extension and by file signature; uploaded names never become paths.
-Each job is a separate process with a timeout; LibreOffice is killed along with it.
-Per-visitor rate limits and a bounded queue, so busy periods degrade gracefully.
-Strict Content-Security-Policy, no cookies, no analytics.
-Docker image runs as a non-root user on a read-only filesystem.
-Known limits
-PDF → Word rebuilds pages as editable content; complex layouts (multi-column pages, forms) can shift. Scanned PDFs come out as pictures; run OCR first.
-PDF → PowerPoint makes one picture slide per page, with the page text in the speaker notes, because PDFs hold no slide structure.
-Edit PDF adds things on top of a page. To change existing text, white it out and type over it.
-Remove watermark handles watermarks that are separate from the page content (labelled watermarks, angled or see-through repeated text, faint logos, Word's own watermarks). A watermark baked into a scanned image can't be removed. Use it only on documents you own or may change.
-Office conversions rely on LibreOffice; a few Microsoft-only features (SmartArt, some animations, macros) are simplified or dropped.
-Licence
+Own server — there's a docker-compose.yml + Caddy setup in the doclivo folder that gives you HTTPS automatically. Just set your domain in .env and run docker compose up -d --build.
 
-AGPL-3.0. PDF → Word depends on PyMuPDF, which is AGPL-licensed, so anyone running Doclivo as a public service must offer its source code; this repository is that offer. See doclivo/LICENSE for bundled third-party licences (pdf.js, Archivo, DejaVu).
+🔐 Privacy
+Files go into a temp folder and get deleted right after you download the result
+No accounts, no cookies, no analytics
+Upload size and file type are checked before anything gets processed
+Rate limited per visitor so one person can't hog the server
+⚠️ Things it can't do (yet)
+PDF → Word works well on normal documents, but fancy layouts like magazines or forms can shift around a bit
+PDF → PowerPoint turns each page into an image slide, because PDFs don't actually store slide info
+Editing existing PDF text isn't supported. You can white it out and type over it though
+Watermark removal won't work if the watermark is part of a scanned image (it's literally baked into the picture)
+Some Microsoft-only stuff like SmartArt or macros gets simplified when converting
+
+📜 License
+
+AGPL-3.0. The PDF → Word part uses PyMuPDF which is AGPL, so the full source has to stay public. That's what this repo is.
+
+Made by @Nishanthmalladi ⭐ Star the repo if it helped you out!
