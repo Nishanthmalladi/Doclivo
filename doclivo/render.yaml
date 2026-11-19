@@ -5,7 +5,8 @@ services:
     name: doclivo
     runtime: docker
     plan: free
-    dockerfilePath: ./Dockerfile.render
+    dockerfilePath: ./doclivo/Dockerfile.render
+    dockerContext: ./doclivo
     healthCheckPath: /healthz
     autoDeploy: true
     envVars:
