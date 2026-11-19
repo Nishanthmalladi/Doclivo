@@ -1,0 +1,39 @@
+# Always-on deployment with automatic HTTPS:
+#   1. point your domain's DNS (an A record) at this server's IP address
+#   2. copy .env.example to .env and set DOMAIN
+#   3. docker compose up -d --build
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PROXY: xff             # Caddy sits in front and reports the visitor's address
+    volumes:
+      - data:/data
+    mem_limit: 2g
+    pids_limit: 512
+    read_only: true          # the app can only write to /data and /tmp
+    tmpfs:
+      - /tmp:size=512m
+    security_opt:
+      - no-new-privileges:true
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  data:
+  caddy_data:
+  caddy_config:

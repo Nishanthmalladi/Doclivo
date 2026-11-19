@@ -1,0 +1,24 @@
+Doclivo
+Copyright (C) 2026 the Doclivo authors
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+
+The full licence text is at https://www.gnu.org/licenses/agpl-3.0.txt
+(add it to this repository as COPYING before you publish).
+
+Why AGPL: PDF to Word uses pdf2docx, which depends on PyMuPDF (AGPL-3.0).
+When you run this as a public website, the AGPL requires you to offer visitors
+the source code of the version you run. Set SOURCE_URL in .env to your public
+repository and the site shows a "Source code" link in the footer.
+
+Bundled third-party files:
+  web/vendor/pdf.min.mjs, pdf.worker.min.mjs   pdf.js, Apache-2.0 (web/vendor/PDFJS-LICENSE.txt)
+  web/fonts/archivo-*.woff2                    Archivo, SIL Open Font License 1.1 (web/fonts/ARCHIVO-LICENSE.txt)
+  app/fonts/*.ttf, web/fonts/DejaVu*.ttf       DejaVu fonts, free licence (app/fonts/DEJAVU-LICENSE.txt)
