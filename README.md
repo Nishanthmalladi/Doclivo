@@ -1,6 +1,6 @@
 📄 Doclivo
 
-I got tired of converter sites that want a login, slap a watermark on your file, or cap you at 2 conversions a day. So I built my own.
+I got tired of converter sites that want a login, or cap you at 2 conversions a day. So I built my own.
 
 Doclivo converts Word, PowerPoint, Excel, PDF and images into pretty much any format you need, and has a bunch of PDF tools on top. It's free, there's no sign-up, and your files get deleted as soon as you download the result.
 
